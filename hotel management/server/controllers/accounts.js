@@ -53,7 +53,7 @@ const addAmount = async  (req,res)=>{
        return res.status(202).json({success:true,msg:'Amount has been updated'})
 
    } catch (error) {
-       // console.log(error)
+       console.log(error)
        // return res.json(error)
        return res.status(404).json({success:false,msg:'Bank server error'})
 

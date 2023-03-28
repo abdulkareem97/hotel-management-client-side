@@ -11,6 +11,8 @@ const hotelRouter = require('./routes/hotels')
 const accountsRouter = require('./routes/accounts')
 const bookingRouter = require('./routes/bookings')
 const paymentHistoryRouter = require('./routes/payment_history')
+const ratingRouter = require('./routes/rating')
+const commentRouter = require('./routes/comments')
 
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
@@ -22,6 +24,9 @@ app.use('/api/v1/hotels',hotelRouter)
 app.use('/api/v1/accounts',accountsRouter)
 app.use('/api/v1/bookings',bookingRouter)
 app.use('/api/v1/history',paymentHistoryRouter)
+app.use('/api/v1/rating',ratingRouter)
+app.use('/api/v1/comment',commentRouter)
+
 
 
 

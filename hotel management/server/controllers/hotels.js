@@ -37,7 +37,7 @@ const getHotel = async  (req,res)=>{
 
 const getMyHotel =  async  (req,res)=>{
     const id = req.params.userId
-    console.log(id)
+    // console.log(id)
     const sql = `select * from hotels where mgr_id=?;`
     const hotel = await db.query(sql,[id])
     if(hotel[0].length===0)

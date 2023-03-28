@@ -3,7 +3,7 @@ const db = require('../db/connection')
 
 
 const getAllUsers = async  (req,res)=>{
-    const sql = `select * from users;`
+    const sql = `select * from users,roles WHERE roles.role_id=users.role;`
     const users = await db.query(sql)
     return res.json(users[0])
     res.send('all data send')
@@ -28,7 +28,7 @@ const createUser = async (req,res)=>{
 
 const getSingleUser =async  (req,res)=>{
     const {email,password} = req.body
-    const sql = `select * from users where email=? and password=?;`
+    const sql = `select * from users,roles where email=? and password=? AND roles.role_id=users.role;`
     const user = await db.query(sql,[email,password])
     if(user[0].length===0)
     {

@@ -8,6 +8,14 @@ const db = mysql.createPool({
     database:'hotel_management'
 
 })
+// const db = mysql.createPool({
+//     host:'sql6.freesqldatabase.com',
+//     port:3306,
+//     user:'sql6587299',
+//     password:'TT5rgeZVut',
+//     database:'sql6587299'
+
+// })
 
 
 db.on('connection', function (connection) {
