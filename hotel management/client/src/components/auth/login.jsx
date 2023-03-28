@@ -41,7 +41,7 @@ const LogIn = (props) => {
 
         } catch (e) {
             // console.log(e.response.data.msg)
-            console.log(e)
+            console.log(e.response)
             
             props.toastMsg(toast.error,'🦄 Invalid Email or Password!',1000)
             //   alert(e)

@@ -14,10 +14,16 @@ const MyHotel = (props) => {
 
     const [myHotel, setMyHotel] = useState()
     const user = useCheckIsLogin()
+    // let user;
+
+    // useEffect(()=>{
+    //     user = useCheckIsLogin()
+    // },[])
 
 
 
     useEffect(() => {
+
         async function getHotelDetails() {
             try {
                 // console.log(user)
@@ -35,24 +41,29 @@ const MyHotel = (props) => {
         getHotelDetails()
     }, [])
 
-    const addHotel = (data)=>{
+    const addHotel = (data) => {
         setMyHotel(data)
 
     }
 
     return (
         <div>
-           {
-            !myHotel  && 
-            <div className='bg-slate-700 mx-4 p-3 rounded-xl text-white text-center'>
-                {/* <Link className='hover:text-slate-400'
+            {
+                !myHotel &&
+                // <div className='bg-slate-700 mx-4 p-3 rounded-xl text-white text-center'>
+                <div>
+                    {/* <Link className='hover:text-slate-400'
                 to={'/myHotel/add'}
                 > Add You Hotel Details </Link> */}
-                <AddHotel toastMsg={props.toastMsg} user={user} addHotel={(data)=>addHotel(data)} />
+                    <AddHotel toastMsg={props.toastMsg} user={user} addHotel={(data) => addHotel(data)} />
+                </div>
+            }
+            {/* my hotel details */}
+
+            <div className={`${!myHotel ? 'hidden' : ''}`}>
+
+                <HotelDetails hotel={myHotel} toastMsg={props.toastMsg} />
             </div>
-           }
-{/* my hotel details */}
-           <HotelDetails hotel={myHotel} />
 
         </div>
     )

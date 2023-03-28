@@ -18,7 +18,7 @@ const Footer = () => {
                         <h2 className="mb-6 text-sm font-semibold  uppercase text-white">Resources</h2>
                         <ul className="text-gray-400">
                             <li className="mb-4">
-                                <a href="https://en.wikipedia.org/wiki/Cat" className="hover:underline">More Information</a>
+                                <a href="https://en.wikipedia.org/wiki/Online_hotel_reservations" className="hover:underline">More Information</a>
                             </li>
                            
                         </ul>
@@ -27,11 +27,14 @@ const Footer = () => {
                     <div>
                         <h2 className="mb-6 text-sm font-semibold  uppercase text-white">Developed using</h2>
                         <ul className="text-gray-400">
-                            <li className="mb-4">
+                            <li className="mb-2">
                                 <a href="https://reactjs.org/" className="hover:underline ">React JS</a>
                             </li>
-                            <li>
+                            <li className="mb-2">
                                 <a href="https://tailwindcss.com/" className="hover:underline">Tailwind CSS</a>
+                            </li>
+                            <li>
+                                <a href="https://nodejs.org/en/" className="hover:underline">Nodejs</a>
                             </li>
                         </ul>
                     </div>
@@ -44,7 +47,7 @@ const Footer = () => {
             <hr className="my-6  sm:mx-auto border-gray-700 lg:my-8" />
             <div className="sm:flex sm:items-center sm:justify-between pb-5">
                 <span className="text-sm sm:text-center text-gray-400">© 2022 
-                <Link to="/" className="hover:underline"> Cat Facts</Link>. All Rights Reserved.
+                <Link to="/" className="hover:underline"> Ideal Hotel </Link>. All Rights Reserved.
                 </span>
                 <div className="flex mt-4 space-x-6 sm:justify-center sm:mt-0">
                     <a href="https://www.facebook.com/abdulkareem.madina.71" className="text-gray-500 hover:text-white">

@@ -15,6 +15,8 @@ import AllHotels from "./components/hotels/AllHotels";
 import MyAccount from "./components/accounts/MyAccount";
 import HotelDetails from "./components/hotels/HotelDetails";
 import BookingHistory from "./components/history/BookingHistory";
+import PaymentHistory from "./components/history/PaymentHistory";
+import AccountDetails from "./components/accounts/AccountDetails";
 
 // import { useNavigate } from 'react-router-dom';
 
@@ -33,6 +35,7 @@ function App() {
     const data =  localStorage.getItem('UserStatus');
     if (data) {
       setUser(JSON.parse(data))
+      console.log(data)
       // navigate('/')
     }
     else {
@@ -59,7 +62,7 @@ function App() {
     localStorage.setItem('UserStatus', JSON.stringify(details))
     toastMsg(toast.success, '🦄 You have login sucessfully!', 1500)
     userStatus()
-    navigate('/hotels')
+    navigate('/account')
 
   }
 
@@ -76,18 +79,20 @@ function App() {
 
     <>
     
-      <Header userDetails={user} />
+      <Header user={user} />
       <ToastContainer />
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Home user={user} />} />
         <Route path="/login" element={<LogIn onSave={(d) => logIn(d)} toastMsg={(fun, msg, time) => toastMsg(fun, msg, time)} />} />
         <Route path="/signup" element={<SignUp onSave={(d) => logIn(d)} toastMsg={(fun, msg, time) => toastMsg(fun, msg, time)} />} />
         <Route path="/logout" element={<Logout onLogout={() => logout()} toastMsg={(fun, msg, time) => toastMsg(fun, msg, time)}/>} />
-        <Route path="/about" element={<About />} />
+        <Route path="/about" element={<About user={user} />} />
         <Route path="/myHotel" element={<MyHotel toastMsg={(fun, msg, time) => toastMsg(fun, msg, time)}/>} />
         <Route path="/bookings" element={<BookingHistory toastMsg={toastMsg}/>} />
-        <Route name='hotelDetail' path="/hotelDetail" element={<HotelDetails toastMsg={(fun, msg, time) => toastMsg(fun, msg, time)}/>} />
+        <Route name='hotelDetail' path="/hotelDetail" element={<HotelDetails toastMsg={toastMsg}/>} />
         <Route path="/account" element={<MyAccount toastMsg={(fun, msg, time) => toastMsg(fun, msg, time)}/>} />
+        <Route path="/accountDetails" element={<AccountDetails toastMsg={toastMsg}/>} />
+        <Route path="/history" element={<PaymentHistory toastMsg={toastMsg}/>} />
         {/* <Route path="/myHotel/add" element={<AddHotel  userDetails={user}  toastMsg={(fun, msg, time) => toastMsg(fun, msg, time)}/>} /> */}
         <Route path="/hotels" element={<AllHotels toastMsg={(fun, msg, time) => toastMsg(fun, msg, time)}/>} />
         {/* <Route path="contact" element={ <Contact/> } /> */}

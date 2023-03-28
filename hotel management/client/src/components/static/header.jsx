@@ -10,18 +10,19 @@ const Header = (props) => {
         { name: "ABOUT US", link: "/about", show: true },
         // { name: "CONTACT", link: "/contact", show: props.userDetails ? true : false},
         // { name: "MY HOTEL", link: "/myHotel", show: ((props.userDetails ? true : false) && props.userDetails.role == 2 )},
-        { name: "MY HOTEL", link: "/myHotel", show: true},
-        { name: "BOOKINGS ", link: "/bookings", show: true},
-        { name: "HOTELS", link: "/hotels", show: props.userDetails ? true : false},
-        { name: "Account", link: "/account", show: props.userDetails ? true : false},
-        { name: "LOG IN", link: "/login", show: props.userDetails ? false : true },
-        { name: "SIGN UP", link: "/signup", show: props.userDetails ? false : true },
-        { name: "LOG OUT", link: "/logout", show: props.userDetails ? true : false },
+        { name: "MY HOTEL", link: "/myHotel", show: ((props.user ? true : false) && props.user.role_name == 'manager' ) },
+        { name: "BOOKINGS ", link: "/bookings", show: ((props.user ? true : false) && props.user.role_name == 'manager' ) },
+        { name: "HOTELS", link: "/hotels",show: ((props.user ? true : false) && props.user.role_name == 'user' ) },
+        { name: "ACCOUNT", link: "/account", show: props.user ? true : false },
+        { name: "HISTORY", link: "/history", show: props.user ? true : false },
+        { name: "LOG IN", link: "/login", show: props.user ? false : true },
+        { name: "SIGN UP", link: "/signup", show: props.user ? false : true },
+        { name: "LOG OUT", link: "/logout", show: props.user ? true : false },
     ];
     let [open, setOpen] = useState(false);
     return (
-        <div className='shadow-md w-full  top-0 left-0 mb-9'>
-            <div className='md:flex items-center sticky justify-between bg-slate-700 text-white py-4 md:px-10 px-7'>
+        <div className='shadow-md w-full mb-9'>
+            <div className='flex items-center justify-between bg-slate-700 text-white py-4 md:px-10 px-7'>
                 <Link to={'/'} className=''>
                     <div className='font-bold text-2xl cursor-pointer flex items-center font-[Poppins] 
     text-gray-800 self-center'>
@@ -41,13 +42,13 @@ const Header = (props) => {
                     <i className={'fa-solid ' + (open ? 'fa-circle-xmark ' : 'fa-bars')}></i>
                 </div>
 
-                <ul className={`md:flex md:items-center md:pb-0 pb-12 absolute md:static bg-blue-500 md:bg-slate-700 text-white md:z-auto z-10 left-0 w-full md:w-auto md:pl-0 pl-9 transition-all duration-500 ease-in ${open ? 'top-20 ' : 'top-[-490px]'}`}>
+                <ul className={`md:flex md:items-center absolute md:static bg-slate-500 md:bg-slate-700 text-white left-0 w-full md:w-auto  max-md:text-center transition-all duration-500 ease-in ${open ? 'top-20 ' : '-top-[630px]'}`}>
                     {
                         Links.map((link) => (
 
                             link.show &&
-                            <li key={link.name} className='md:ml-8 text-xl md:my-0 my-7 text-white'>
-                                <Link to={link.link} className=' hover:text-gray-400 duration-500 ' onClick={() => setOpen(!open)}>{link.name}</Link>
+                            <li key={link.name} className='md:ml-8 text-xl md:my-0 my-7 text-white  '>
+                                <Link to={link.link} className=' hover:text-gray-100 active:bg-slate-800 duration-500 hover:bg-black p-2 rounded-lg' onClick={() => setOpen(!open)}>{link.name}</Link>
                             </li>
                         ))
                     }

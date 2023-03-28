@@ -3,6 +3,10 @@ import { useState } from 'react';
 import useCheckIsLogin from '../auth/useCheckIsLogin';
 import axios from 'axios'
 import { toast } from 'react-toastify';
+import BookingModal from '../Modal/BookingModal';
+import * as Xlsx from "sheetjs-style";
+import emailjs from '@emailjs/browser';
+
 
 
 
@@ -11,9 +15,12 @@ const BookingHistory = (props) => {
 
     const user = useCheckIsLogin()
     const [bookings, setBookings] = useState([])
+    const [openModal, setOpenModal] = useState(false)
     const [reload, onReload] = useState(false)
 
     useEffect(() => {
+        // console.log('booking')
+
         async function getPendingBookings() {
             try {
                 const res = await axios.get(`/api/v1/bookings/${user?.user_id}`)
@@ -26,6 +33,7 @@ const BookingHistory = (props) => {
         }
         getPendingBookings()
 
+        // })
     }, [reload])
 
 
@@ -43,19 +51,37 @@ const BookingHistory = (props) => {
         }
 
         const addAmountToMgr = {
-            user_id : data.mgr_id,
-            amount : data.amount
+            user_id: data.mgr_id,
+            amount: data.amount
         }
 
         // console.log(data)
         try {
+
+
+            props.toastMsg(toast.success, `🦄${data.amount} credited to your account`, 1000)
+
             await axios.patch('/api/v1/bookings', BookingData)
 
-            await axios.post('/api/v1/history',historyData)
-            
-            await axios.patch(`/api/v1/accounts/add/`,addAmountToMgr)
+            await axios.post('/api/v1/history', historyData)
 
+            await axios.patch(`/api/v1/accounts/add/`, addAmountToMgr)
+
+
+            var templateParams = {
+                hotel_name: data.hotel_name,
+                reply_to: data.email,
+                to_name : data.name ,
+                rooms : data.no_of_rooms,
+                days : data.no_of_days,
+                coast : data.amount,
+            };
+             
+            
+            
+            
             props.toastMsg(toast.success, '🦄 Booking Accepted!!', 1000)
+            await emailjs.send('service_kqcn8hp', 'template_yot5gra', templateParams,'bKUSC9DrZNFm5CEGO')
 
         } catch (error) {
             console.log(error.response)
@@ -79,9 +105,25 @@ const BookingHistory = (props) => {
 
         }
 
+
+        const returnAmounToUser = {
+            user_id: data.user_id,
+            amount: data.amount
+        }
+
+        // const historyData = {
+        //     from_id: data.mgr_id,
+        //     too_id: data.user_id,
+        //     amount: data.amount
+        // }
+
         console.log(data)
         try {
             await axios.patch('/api/v1/bookings', BookingData)
+            await axios.patch(`/api/v1/accounts/add/`, returnAmounToUser)
+            // await axios.post('/api/v1/history',historyData)
+
+
             props.toastMsg(toast.success, '🦄 Booking Rejected!!', 1000)
 
         } catch (error) {
@@ -95,8 +137,79 @@ const BookingHistory = (props) => {
 
     }
 
+
+
+    const handleModal = () => {
+        if (openModal) {
+            setOpenModal(false)
+            // setNoOFDays('')
+            // setNoOfRooms('')
+            return
+
+        }
+
+        // if (totalPrice !== 0) {
+        setOpenModal(true)
+        // }
+        // else {
+        // props.toastMsg(toast.error, '🦄Fill the details!!!...', 1000)
+
+
+        // }
+
+    }
+
+    const downloadExcel = async (data) => {
+
+        data['hotel_id'] = bookings[0].hotel_id
+        console.log(data)
+        try {
+
+            props.toastMsg(toast.success, '🦄 Preparing file to download', 500)
+
+            const fileData = await axios.post(`/api/v1/bookings/excel`, data)
+
+            // const ws = Xlsx.utils.json_to_sheet(
+            //     fileData
+            // );
+            // const wb = Xlsx.utils.book_new();
+
+            console.log(fileData.data)
+
+
+
+            const ws = Xlsx.utils.json_to_sheet(
+                fileData.data
+                
+              );
+              const wb = Xlsx.utils.book_new();
+              await Xlsx.utils.book_append_sheet(wb, ws, "s1");
+            //   const download = () => {
+                Xlsx.writeFile(
+                  wb,
+                  "BookingHistory.xlsx"
+                );
+            //   };
+
+            props.toastMsg(toast.success, '🦄 File started downloading', 500)
+
+        } catch (error) {
+            props.toastMsg(toast.success, '🦄 Server Error Try Again after some time ', 500)
+
+            // console.log(error)
+
+        }
+
+    }
+
     return (
         <div>
+
+            {/*  */}
+
+            <div className='flex justify-end'>
+                <button onClick={handleModal} className="bg-black text-white mr-3 p-2 rounded-md hover:text-black hover:bg-white">Download exel</button>
+            </div>
 
             <div className='text-2xl flex justify-center underline mb-3'>
                 <h4>Bookings Pending</h4>
@@ -108,15 +221,21 @@ const BookingHistory = (props) => {
 
             {/* table */}
 
-            <div className="overflow-x-auto relative shadow-md sm:rounded-lg mx-3 rounded-md">
-                <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                    <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            <div className="overflow-x-auto shadow-md sm:rounded-lg mx-3 rounded-md">
+                <table className="w-full text-sm text-left text-gray-400">
+                    <thead className="text-xs  uppercase bg-gray-700 text-gray-400">
                         <tr>
                             <th scope="col" className="py-3 px-6">
                                 sl. no
                             </th>
                             <th scope="col" className="py-3 px-6">
                                 Email
+                            </th>
+                            <th scope="col" className="py-3 px-6">
+                                Rooms
+                            </th>
+                            <th scope="col" className="py-3 px-6">
+                                Days
                             </th>
                             <th scope="col" className="py-3 px-6">
                                 Amount
@@ -132,17 +251,23 @@ const BookingHistory = (props) => {
 
 
                         {
-                            bookings.length != 0 ? bookings.map((b, ind) => {
+                            bookings.length != 0 ? bookings.reverse().map((b, ind) => {
                                 return (
-                                    <tr key={b.b_id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                    <tr key={b.b_id} className=" border-b bg-gray-800 border-gray-700 hover:bg-gray-600">
                                         <td className="py-4 px-6">
                                             {ind + 1}
                                         </td>
-                                        <th scope="row" className="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <th scope="row" className="py-4 px-6 font-medium  whitespace-nowrap text-white">
                                             {b.email}
                                         </th>
 
 
+                                        <td className="py-4 px-6">
+                                            {b.no_of_rooms}
+                                        </td>
+                                        <td className="py-4 px-6">
+                                            {b.no_of_days}
+                                        </td>
                                         <td className="py-4 px-6">
                                             {b.amount}
                                         </td>
@@ -154,23 +279,19 @@ const BookingHistory = (props) => {
                                     </tr>
                                 )
 
-                            }) : <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                            }) : <tr className=" border-b bg-gray-800 border-gray-700  hover:bg-gray-600">
                                 <td className="py-4 px-6">
 
 
                                 </td>
-                                <th scope="row" className="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                <th scope="row" className="py-4 px-6 font-medium whitespace-nowrap text-white">
                                     No Bookings Pending Avaialable
 
                                 </th>
-
-
-                                <td className="py-4 px-6">
-
-                                </td>
-                                <td>
-
-                                </td>
+                                <td className="py-4 px-6"></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
                             </tr>
 
 
@@ -181,6 +302,19 @@ const BookingHistory = (props) => {
                     </tbody>
                 </table>
             </div>
+
+
+
+            <BookingModal open={openModal} handleModal={handleModal} toastMsg={props?.toastMsg} downloadExcel={downloadExcel}
+
+            />
+
+
+
+
+
+
+
 
 
         </div>

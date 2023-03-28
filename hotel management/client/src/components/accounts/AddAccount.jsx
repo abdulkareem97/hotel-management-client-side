@@ -13,9 +13,9 @@ const AddAccount = (props) => {
     const [location, setlocation] = useState()
 
 
-    const [pin,setPin] = useState()
-    const [cpin,setCpin] = useState()
-    const [referalCode,setReferalCode] = useState("")
+    const [pin, setPin] = useState()
+    const [cpin, setCpin] = useState()
+    const [referalCode, setReferalCode] = useState("")
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -24,28 +24,25 @@ const AddAccount = (props) => {
             props.toastMsg(toast.error, '🦄 Enter Your Pin and confirm pin')
             return
         }
-         if(pin.length !==4)
-        {
+        if (pin.length !== 4) {
             props.toastMsg(toast.error, '🦄 Enter 4 Digit Pin')
             return
 
         }
-         if(pin !== cpin)
-         {
+        if (pin !== cpin) {
             props.toastMsg(toast.error, '🦄 Pin and confirm pin must matchs')
             return
 
-         }
+        }
 
-         let amt =0
+        let amt = 0
 
 
-         if(referalCode==="")
-         {
+        if (referalCode === "") {
             amt = 0
-             
-         }
-         else{
+
+        }
+        else {
             try {
                 const ref_user = await axios.get(`/api/v1/accounts/referal/${referalCode}`)
 
@@ -53,38 +50,59 @@ const AddAccount = (props) => {
                 console.log(ref_user)
 
                 const addAmountToRefUSer = {
-                    aid : ref_user.data[0].aid,
-                    amount : 500
+                    user_id: ref_user.data[0].user_id,
+                    amount: 500
+                }
+
+
+                const historyData = {
+                    from_id: 1,
+                    too_id: ref_user.data[0].user_id,
+                    amount: 500
+                }
+
+
+                const CreaterhistoryData = {
+                    from_id: 1,
+                    too_id: props.user?.user_id,
+                    amount: 100
                 }
 
                 // console.log('here2')
 
-                
+                await axios.post('/api/v1/history', historyData)
+                await axios.post('/api/v1/history', CreaterhistoryData)
 
-                await axios.patch(`/api/v1/accounts/add/`,addAmountToRefUSer)
+
+
+
+                await axios.patch(`/api/v1/accounts/add/`, addAmountToRefUSer)
                 // console.log('here3')
+
+                props.toastMsg(toast.error, '🦄 100 credited to your account')
+
 
 
 
 
                 amt = 100
-                
+
             } catch (error) {
-               console.log(error)
-                
+                console.log(error)
+
             }
-         }
+        }
 
-         var cn1 = Math.floor(1000 + Math.random() * 9000);
-         var cn2 = Math.floor(1000 + Math.random() * 9000);
-         var cn3 = Math.floor(1000 + Math.random() * 9000);
-         var cn4 = Math.floor(1000 + Math.random() * 9000);
+        var cn1 = Math.floor(1000 + Math.random() * 9000);
+        var cn2 = Math.floor(1000 + Math.random() * 9000);
+        var cn3 = Math.floor(1000 + Math.random() * 9000);
+        var cn4 = Math.floor(1000 + Math.random() * 9000);
 
-         const user_id = props.user.user_id
-         const amount = amt
-         const referal_code = props.user.user_id + "" + (Math.random() + 1).toString(36).substring(4)
-         const upi_pin = pin
-         const card_no = `${cn1} ${cn2} ${cn3} ${cn4}`
+        const user_id = props.user.user_id
+        const amount = amt
+        const referal_code = props.user.user_id + "" + (Math.random() + 1).toString(36).substring(4)
+        const upi_pin = pin
+        const card_no = `${cn1} ${cn2} ${cn3} ${cn4}`
 
         // account/
 
@@ -104,9 +122,9 @@ const AddAccount = (props) => {
             card_no
         }
 
-    
-        
-     
+
+
+
         // console.log(hotel)
         try {
             await axios.post('/api/v1/accounts/add', account)
@@ -114,6 +132,9 @@ const AddAccount = (props) => {
             const res = await axios.get(`/api/v1/accounts/get/${props.user.user_id}`)
 
             props.addAccount(res.data)
+
+
+            props.toastMsg(toast.error, '🦄 Account Created Successfully')
 
 
 
@@ -211,36 +232,36 @@ const AddAccount = (props) => {
 
 
                                     <div>
-                                        <input type="text" name="" id="" 
-                                         className='bg-slate-700 text-xl p-3 border-b-2 border-black focus:outline-none focus:bg-slate-600
+                                        <input type="text" name="" id=""
+                                            className='bg-slate-700 text-xl p-3 border-b-2 border-black focus:outline-none focus:bg-slate-600
                                          hover:bg-slate-600
                                          '
-                                                     placeholder='Referal Code'
-                                                     value={referalCode} onChange={(e) => setReferalCode(e.target.value)}
-                                                 />
+                                            placeholder='Referal Code'
+                                            value={referalCode} onChange={(e) => setReferalCode(e.target.value)}
+                                        />
                                     </div>
                                     <div>
-                                        <input type="number" name="" id="" 
-                                         className='bg-slate-700 text-xl p-3 border-b-2 border-black focus:outline-none focus:bg-slate-600
+                                        <input type="number" name="" id=""
+                                            className='bg-slate-700 text-xl p-3 border-b-2 border-black focus:outline-none focus:bg-slate-600
                                          hover:bg-slate-600
                                          '
-                                                     placeholder='Set Your Pin'
-                                                     value={pin} onChange={(e) => setPin(e.target.value)}
-                                                 />
+                                            placeholder='Set Your Pin'
+                                            value={pin} onChange={(e) => setPin(e.target.value)}
+                                        />
                                     </div>
                                     <div>
-                                        <input type="number" name="" id="" 
-                                         className='bg-slate-700 text-xl p-3 border-b-2 border-black focus:outline-none focus:bg-slate-600
+                                        <input type="number" name="" id=""
+                                            className='bg-slate-700 text-xl p-3 border-b-2 border-black focus:outline-none focus:bg-slate-600
                                          hover:bg-slate-600
                                          '
-                                                     placeholder='Confirm Your Pin'
-                                                 value={cpin} onChange={(e) => setCpin(e.target.value)}/>
+                                            placeholder='Confirm Your Pin'
+                                            value={cpin} onChange={(e) => setCpin(e.target.value)} />
                                     </div>
-     
 
-                                 
 
-                                   
+
+
+
 
                                     <div className='flex justify-center'>
                                         <button type="submit" className='bg-black py-3 px-6 rounded-full hover:bg-white hover:text-black'>Set Pin</button>

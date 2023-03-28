@@ -7,6 +7,9 @@ import { ToastContainer, toast } from 'react-toastify';
 import AddAccount from './AddAccount';
 import { Routes, Route, useNavigate } from "react-router-dom"
 import useCheckIsLogin from '../auth/useCheckIsLogin'
+import UpiPinModal from '../Modal/UpiPinModal'
+import DepositeModal from '../Modal/DepositeModal';
+
 
 
 
@@ -19,6 +22,12 @@ const MyAccount = (props) => {
     const user = useCheckIsLogin()
 
     const [myAccount, setMyAccount] = useState()
+    const [openModal, setOpenModal] = useState(false)
+    const [openDeposteModal, setDeposteOpenModal] = useState(false)
+    const [openDepositeUpiModal, setOpenDepositeUpiModal] = useState(false)
+    const [depositeMoney, setDepositeMoney] = useState()
+
+
 
 
 
@@ -32,7 +41,7 @@ const MyAccount = (props) => {
             try {
                 // console.log(user)
                 const res = await axios.get(`/api/v1/Accounts/get/${user?.user_id}`)
-                console.log(res.data[0])
+                // console.log(res.data[0])
                 setMyAccount(res.data[0])
 
             } catch (e) {
@@ -52,11 +61,104 @@ const MyAccount = (props) => {
 
     }
 
+    const handleModal = () => {
+        if (openModal) {
+            setOpenModal(false)
+            return
+
+        }
+        setOpenModal(true)
+
+
+
+    }
+
+    const handleDepositeModal = () => {
+        if (openDeposteModal) {
+            setDeposteOpenModal(false)
+            return
+
+        }
+        setDeposteOpenModal(true)
+
+
+    }
+
+    const handleDepositeUpiModal = () => {
+        if (openDepositeUpiModal) {
+            setOpenDepositeUpiModal(false)
+            return
+
+        }
+        setOpenDepositeUpiModal(true)
+
+    }
+
+    const handleDeposit = (amt) => {
+        // console.log('here')
+        setDepositeMoney(amt)
+        handleDepositeModal()
+        handleDepositeUpiModal()
+
+
+    }
+
+    const addDepositeMoney = async () => {
+
+        console.log(depositeMoney,myAccount.aid)
+
+
+
+        try {
+            const addAmountToUser = {
+                user_id: user.user_id,
+                amount: depositeMoney
+            }
+
+            const historyData = {
+                from_id: 1,
+                too_id: user.user_id,
+                amount: depositeMoney
+            }
+
+            // console.log('here2')
+
+
+
+            await axios.patch(`/api/v1/accounts/add/`, addAmountToUser)
+
+            await axios.post('/api/v1/history', historyData)
+
+            props.toastMsg(toast.success, `🦄${depositeMoney} credited to your account`, 1000)
+
+        } catch (error) {
+            console.log(error.response.data)
+            props.toastMsg(toast.error, '🦄 Server Error!!', 1000)
+
+
+        }
+
+        handleDepositeUpiModal()
+
+    }
+
+    const getBankDetails = async (data) => {
+
+
+
+
+        handleModal()
+
+        navigate('/accountDetails', { state: { myAccount } })
+
+
+    }
+
     return (
         <>
             <div>
                 {
-                    !myAccount && 
+                    !myAccount &&
                     <div className='bg-slate-700 mx-4 p-3 rounded-xl text-white text-center'>
                         {/* <Link className='hover:text-slate-400'
                 to={'/myHotel/add'}
@@ -70,7 +172,7 @@ const MyAccount = (props) => {
             {myAccount &&
                 <div>
                     <ToastContainer />
-                    <div class="p-8 relative">
+                    <div class="p-8 ">
                         <div class="rounded-2xl overflow-hidden shadow-lg">
                             <div
                                 class="flex justify-center p-10 bg-gradient-to-r from-green-300 via-blue-500 to-purple-600"
@@ -114,7 +216,7 @@ const MyAccount = (props) => {
                                     </div>
                                     <div class="flex justify-center mt-4">
                                         <h1 class="text-gray-400 font-thin font-os">
-                                            XXXX XXXX XXXX 1234
+                                            XXXX XXXX XXXX {myAccount?.card_no?.split(" ")[3]}
                                         </h1>
                                     </div>
                                     <div
@@ -126,16 +228,46 @@ const MyAccount = (props) => {
                                         </h4>
                                     </div>
                                 </div>
+
+
+                                <div>
+
+                                </div>
+
+
                             </div>
-                            <div class="text-center mt-8 mb-2 font-quick">
+
+                            <div class="text-center mt-8 font-quick">
+                                <h1 class="font-black text-gray-700 tracking-wide text-xl">
+                                    Deposite Money
+                                </h1>
+                                <button onClick={handleDepositeModal} className='hover:text-green-500'>
+                                    <i class="fa-sharp fa-solid fa-credit-card text-3xl"></i>
+                                </button>
+                            </div>
+
+
+
+                            <div class="text-center mt-4 mb-2 font-quick">
+
                                 <h1 class="font-black text-gray-700 tracking-wide text-xl">
                                     Get Your Bank Details
                                 </h1>
                                 <p class="font-bold text-gray-500">Ak -ideal Bank</p>
                             </div>
-                            <div class="p-8 flex justify-center relative">
-                                <button
-                                    class="absolute p-3 rounded-full bottom-2 bg-gradient-to-r from-green-300 via-blue-500 to-purple-600"
+
+                            {/* temp original */}
+                            <div className='h-10'>
+
+                            </div>
+                      
+                        </div>
+
+                        {/* temp */}
+                        <div class="p-3 flex justify-center -m-11">
+                                {/* to={'/accountDetails'} state={{myAccount}} */}
+                                <button onClick={handleModal}
+                                    class=" p-3 rounded-full bg-gradient-to-r from-green-300 via-blue-500 to-purple-600"
                                 >
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -152,13 +284,33 @@ const MyAccount = (props) => {
                                         <line x1="15" y1="16" x2="19" y2="12" />
                                         <line x1="15" y1="8" x2="19" y2="12" />
                                     </svg>
-                                </button>
+                                </button >
                             </div>
-                        </div>
                     </div>
 
 
                 </div>}
+
+
+
+            <UpiPinModal open={openModal} handleModal={handleModal} toastMsg={props.toastMsg} handleBank={getBankDetails}
+                userDetails={user}
+
+            />
+
+
+            {/* for deposite of the amount */}
+            <UpiPinModal open={openDepositeUpiModal} handleModal={handleDepositeUpiModal} toastMsg={props.toastMsg} handleBank={addDepositeMoney}
+                userDetails={user}
+
+            />
+
+            <DepositeModal open={openDeposteModal} handleModal={handleDepositeModal} handleDeposit={handleDeposit} toastMsg={props.toastMsg} />
+
+
+
+
+
         </>
     )
 }
